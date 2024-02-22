@@ -3,10 +3,10 @@ pipeline {
 
     environment {
         // Define your environment variables here
-        SFDC_HOST = env.SFDC_HOST_DH
-        JWT_KEY_CRED_ID = env.JWT_CRED_ID_DH
-        CONNECTED_APP_CONSUMER_KEY = env.CONNECTED_APP_CONSUMER_KEY_DH
-        HUB_ORG = env.HUB_ORG_DH
+        SFDC_HOST = "${env.SFDC_HOST_DH}"
+        JWT_KEY_CRED_ID = "${env.JWT_CRED_ID_DH}"
+        CONNECTED_APP_CONSUMER_KEY = "${env.CONNECTED_APP_CONSUMER_KEY_DH}"
+        HUB_ORG = "${env.HUB_ORG_DH}"
     }
 
     stages {
@@ -51,8 +51,9 @@ pipeline {
     }
 
     post {
-        always {
-            // Cleanup, notifications, or other end-of-pipeline steps
-        }
+    always {
+        // Example step
+        echo 'This will always run'
     }
+}
 }
