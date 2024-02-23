@@ -23,23 +23,27 @@ node {
         checkout scm
     }
 
-    withCredentials([file(credentialsId: JWT_KEY_CRED_ID, variable: 'JWT_KEY_FILE')]) {
+    withCredentials([file(credentialsId: JWT_KEY_CRED_ID, variable: 'jwt_key_file')]) {
+        stage('Deploye Code') {
+            if (isUnix()) {
+                rc = sh returnStatus: true, script: "${toolbelt} force:auth:jwt:grant --clientid ${CONNECTED_APP_CONSUMER_KEY} --username ${HUB_ORG} --jwtkeyfile ${jwt_key_file} --setdefaultdevhubusername --instanceurl ${SFDC_HOST}"
+            }else{
+                 rc = bat returnStatus: true, script: "\"${toolbelt}\" force:auth:jwt:grant --clientid ${CONNECTED_APP_CONSUMER_KEY} --username ${HUB_ORG} --jwtkeyfile \"${jwt_key_file}\" --setdefaultdevhubusername --instanceurl ${SFDC_HOST}"
+            }
+            if (rc != 0) { error 'hub org authorization failed' }
 
-        stage('Install CLI') {
-                rc = command "npm install -g sfdx-cli --loglevel verbose"
-                println(rc)
-                if (rc != 0) {
-                    error 'Salesforce CLI not installed properly.'
-                }
-    script {
-        def command = "sfdx force:auth:jwt:grant --clientid ${CONNECTED_APP_CONSUMER_KEY} --jwtkeyfile ${JWT_KEY_FILE} --username ${HUB_ORG} --setdefaultdevhubusername --instanceurl ${SFDC_HOST}"
-        if (isUnix()) {
-            sh command
-        } else {
-            bat command
+			println rc
+			
+			// need to pull out assigned username
+			if (isUnix()) {
+				rmsg = sh returnStdout: true, script: "${toolbelt} force:mdapi:deploy -d manifest/. -u ${HUB_ORG}"
+			}else{
+			   rmsg = bat returnStdout: true, script: "\"${toolbelt}\" force:mdapi:deploy -d manifest/. -u ${HUB_ORG}"
+			}
+			  
+            printf rmsg
+            println('Hello from a Job DSL script!')
+            println(rmsg)
         }
     }
-}
-    }
-
 }
