@@ -24,6 +24,13 @@ node {
     }
 
     withCredentials([file(credentialsId: JWT_KEY_CRED_ID, variable: 'JWT_KEY_FILE')]) {
+
+        stage('Install CLI') {
+                rc = command "npm install -g sfdx-cli --loglevel verbose"
+                println(rc)
+                if (rc != 0) {
+                    error 'Salesforce CLI not installed properly.'
+                }
     script {
         def command = "sfdx force:auth:jwt:grant --clientid ${CONNECTED_APP_CONSUMER_KEY} --jwtkeyfile ${JWT_KEY_FILE} --username ${HUB_ORG} --setdefaultdevhubusername --instanceurl ${SFDC_HOST}"
         if (isUnix()) {
@@ -33,4 +40,6 @@ node {
         }
     }
 }
+    }
+
 }
