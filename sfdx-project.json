@@ -6,6 +6,6 @@
     }
   ],
   "namespace": "",
-  "sfdcLoginUrl": "https://login.salesforce.com",
+  "sfdcLoginUrl": "https://pwc-7cc-dev-ed.develop.my.salesforce.com",
   "sourceApiVersion": "45.0"
 }
