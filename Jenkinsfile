@@ -24,6 +24,17 @@ pipeline {
                 }
             }
         }
+        stage('Check Salesforce CLI') {
+    steps {
+        script {
+            if (isUnix()) {
+                sh 'sfdx --version'
+            } else {
+                bat 'sfdx --version'
+            }
+        }
+    }
+}
 
         stage('Deploy to Salesforce') {
             steps {
