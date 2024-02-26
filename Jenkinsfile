@@ -36,15 +36,29 @@ node {
 			
 			// need to pull out assigned username
 			if (isUnix()) {
-				rmsg = sh returnStdout: true, script: "${toolbelt} sfdx force:source:deploy -p force-app -u ${HUB_ORG} -w 10"
+				rmsg = sh returnStdout: true, script: "${toolbelt} force:mdapi:deploy -d manifest/. -u ${HUB_ORG} -w 10"
 			}else{
-			   rmsg = bat returnStdout: true, script: "\"${toolbelt}\" sfdx force:source:deploy -p force-app -u ${HUB_ORG} -w 10"
+			   rmsg = bat returnStdout: true, script: "\"${toolbelt}\" force:mdapi:deploy -d manifest/. -u ${HUB_ORG} -w 10"
 			}
 			  
             printf rmsg
             println('Hello from a Job DSL script!')
             println(rmsg)
         }
+
+        stage('Deploy to Salesforce') {
+        withCredentials([file(credentialsId: JWT_KEY_CRED_ID, variable: 'jwt_key_file')]) {
+            if (isUnix()) {
+                echo "Deploying to Salesforce..."
+                def deployCommand = "${toolbelt} sfdx force:source:deploy -p force-app -u ${HUB_ORG} -w 10"
+                sh returnStatus: false, script: deployCommand
+            } else {
+                echo "Deploying to Salesforce..."
+                def deployCommand = "\"${toolbelt}\" sfdx force:source:deploy -p force-app -u ${HUB_ORG} -w 10"
+                bat returnStatus: false, script: deployCommand
+            }
+        }
+    }
         
     }
 }
